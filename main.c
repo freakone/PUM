@@ -11,9 +11,10 @@
 
 int main()
 {
-	ADDRESS = eeprom_read_word(( uint16_t *)1);
-	uart_init();
+	ADDRESS = eeprom_read_word(( uint16_t *)1);	
 	sei();	
+	uart_init();
+	
 	while(1)
 	{		
 

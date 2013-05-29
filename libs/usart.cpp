@@ -23,14 +23,19 @@ unsigned char uart_receive( void )
 }
 
 volatile int8_t hascii3[3];
+volatile int8_t hascii8[8];
 ISR(USART_RX_vect)
 {
+	if((pos > 0 && buffer[0] != 0xff )|| pos > 25) //antycrap
+		pos = 0;
+
 	buffer[pos] = UDR0;	
 	pos++;
 	
 
-	if(UDR0 == 0x0A &&  buffer[0] == 0xff)//sprawdzamy czy została przesłąna poprawna ramka	
+	if(buffer[pos-1] == 0x0A &&  buffer[0] == 0xff)//sprawdzamy czy została przesłana poprawna ramka	
 	{	
+
 		if(buffer[1] == ADDRESS || buffer[1] == 0x10) // komendy jednostkowe
 		{
 		
@@ -73,8 +78,6 @@ ISR(USART_RX_vect)
 		pos = 0;
 	
 	}
-	else if((pos > 1 && buffer[0] != 0xff )|| pos > 25)
-		pos = 0;
 
 	
 }
