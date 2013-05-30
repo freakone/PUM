@@ -1,7 +1,7 @@
 #include "globals.h"
 #include "usart.h"
 
-volatile unsigned int ADDRESS;
+volatile unsigned char ADDRESS;
 
 void wait_ms(int ms) {
   int i;
@@ -39,10 +39,11 @@ int32_t hascii2dec(volatile int8_t* ptext){
 	}
 	
 	
-	p=ptext;
+	p=ptext;	
 
-	for(int i = l-2; i >= 0; i--)
+	for(int i = l-1; i >= 0; i--)
 	{
+		
 		
 		if(*p>='0' && *p<='9'){
 		t+=(*p-48)*(1<< (i*4));

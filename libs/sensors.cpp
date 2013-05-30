@@ -6,7 +6,7 @@ void sensors_init() // przestawic
 {	
 	DDRC = 0;
 	ADCSRA = (1 << ADEN);
-	ADMUX = 0b11000000;
+	ADMUX = (1 << REFS0); // AVcc with external cap at ARef
 }
 
 void sensors_update()

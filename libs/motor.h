@@ -7,24 +7,21 @@
 #define M1_IN2 PD7
 
 #define M1_PWM_DDR DDRB
-#define M1 OCR1B
-#define M1_PWM PB2 
+#define M1 OCR1AL
+#define M1_PWM PB1
 
 
 #define M2_IN1_PORT PORTD //SILNIK PRAWY
 #define M2_IN1_DDR DDRD
-#define M2_IN1 PD5
+#define M2_IN1 PD6
 
 #define M2_IN2_PORT PORTD
 #define M2_IN2_DDR DDRD
-#define M2_IN2 PD6
+#define M2_IN2 PD5
 
 #define M2_PWM_DDR DDRB
-#define M2 OCR1A
-#define M2_PWM PB1
-
-#define FOR 1
-#define BCK 2
+#define M2 OCR1BL
+#define M2_PWM PB2
 
 
 void motor_init();
