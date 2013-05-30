@@ -14,41 +14,33 @@ void dec2hascii(uint32_t liczba, uint8_t length){
 	
 	uint32_t buffer;
 	
-	for (int i=length-1;i >= 0;i--)
+	//sztuczne dopełnienie do > 16 bitów	
+	if(length > 4)
+		for(int i = 0; i < length -4; i++)
+			uart_put('0');
+			
+	for (volatile int i=length;i > 0;i--)
 	{
-		buffer = (liczba % (1<< ((i+1)*4))) / (1<< ((i*4))) ;
+		buffer = (liczba % (1<< (i*4)) / (1<< (i*4)-4));
 		if (buffer>=0 && buffer<=9)
 			uart_put((uint8_t)buffer+48);
 		else if (buffer>=10 && buffer<=15)
 			uart_put((uint8_t)buffer+55);
 		
 	}
+	
 }
 
-int32_t hascii2dec(volatile int8_t* ptext){
-	volatile int8_t* p;
-	int32_t t = 0;
-	int l = 0;
+int32_t hascii2dec(volatile unsigned char* p, volatile int8_t len){
 
-	p=ptext;
-	
-	while(*p)
-	{		
-		l++;
-		*p++;
-	}
-	
-	
-	p=ptext;	
+	volatile int32_t t = 0;
 
-	for(int i = l-1; i >= 0; i--)
+	for(volatile int i = len -1; i >= 0; i--)
 	{
-		
-		
 		if(*p>='0' && *p<='9'){
-		t+=(*p-48)*(1<< (i*4));
+		t+=(int32_t)((*p-48)*(1<< (i*4)));
 		}else if(*p>='A' && *p<='F'){
-			t+=(*p-55)*(1<< (i*4));
+			t+=(int32_t)((*p-55)*(1<< (i*4)));
 		}
 		++p;	
 	}

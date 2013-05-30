@@ -4,5 +4,5 @@
 
 extern volatile unsigned char ADDRESS;
 void dec2hascii(uint32_t liczba, uint8_t length);
-int32_t hascii2dec(volatile int8_t* ptext);
+int32_t hascii2dec(volatile unsigned char* p, volatile int8_t len);
 void wait_ms(int ms);

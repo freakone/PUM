@@ -23,9 +23,9 @@ unsigned char uart_receive( void )
 	return UDR0;
 }
 
-volatile int8_t hascii3[3];
-volatile int8_t hascii8[8];
-volatile int32_t val, no;
+static unsigned char hascii3[3];
+static unsigned char hascii8[8];
+volatile static int32_t val, no;
 ISR(USART_RX_vect)
 {
 	if((pos > 0 && buffer[0] != 0xff )|| pos > 25) //antycrap
@@ -57,7 +57,7 @@ ISR(USART_RX_vect)
 				{					
 					hascii8[i - 3] = buffer[i];
 				}
-				val = hascii2dec(hascii8);
+				val = hascii2dec(hascii8, 8);
 				
 				m1_set(val);
 				m2_set(val);
@@ -69,7 +69,7 @@ ISR(USART_RX_vect)
 				{					
 					hascii8[i - 3] = buffer[i];
 				}
-				val = hascii2dec(hascii8);
+				val = hascii2dec(hascii8, 8);
 				
 				m1_change(val);
 				m2_change(val);
@@ -81,7 +81,7 @@ ISR(USART_RX_vect)
 				{					
 					hascii8[i - 3] = buffer[i];
 				}
-				val = hascii2dec(hascii8);
+				val = hascii2dec(hascii8, 8);
 				
 				m1_change(-val);
 				m2_change(-val);
@@ -102,7 +102,7 @@ ISR(USART_RX_vect)
 					hascii3[i - 3] = buffer[i];
 				}
 				
-				ADDRESS = hascii2dec(hascii3);
+				ADDRESS = hascii2dec(hascii3, 3);
 				eeprom_write_word((uint16_t*)1, (uint16_t)ADDRESS);
 				
 				uart_put(0xff);
@@ -113,17 +113,21 @@ ISR(USART_RX_vect)
 				break;
 				
 				case 0x26: //regulacja prędkości pojedynczego silnika
+				
+				
 				for(int i = 3; i < 6; i++)
 				{					
 					hascii3[i - 3] = buffer[i];
 				}
-				no = hascii2dec(hascii3);
+
+				no = hascii2dec(hascii3, 3);
 				
 				for(int i = 6; i < 14; i++)
 				{					
 					hascii8[i - 6] = buffer[i];
+
 				}
-				val = hascii2dec(hascii8);
+				val = hascii2dec(hascii8, 8);
 				
 					switch(no)
 					{
@@ -184,7 +188,6 @@ ISR(USART_RX_vect)
 		
 			
 		pos = 0;
-	
 	}
 
 	
