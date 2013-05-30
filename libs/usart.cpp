@@ -4,8 +4,12 @@
 #include "globals.h"
 #include <avr/eeprom.h>
 
-static unsigned char buffer[30];
-static unsigned int pos = 0;
+volatile static unsigned char buffer[30];
+volatile static unsigned int pos = 0;
+volatile static unsigned char hascii3[3];
+volatile static unsigned char hascii8[8];
+volatile static int32_t val, no;
+
 void uart_init()
 {	
 	UBRR0H = (unsigned char)(BAUD_PRESCALE>>8);
@@ -23,9 +27,6 @@ unsigned char uart_receive( void )
 	return UDR0;
 }
 
-static unsigned char hascii3[3];
-static unsigned char hascii8[8];
-volatile static int32_t val, no;
 ISR(USART_RX_vect)
 {
 	if((pos > 0 && buffer[0] != 0xff )|| pos > 25) //antycrap
