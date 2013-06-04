@@ -9,6 +9,7 @@ volatile static unsigned int pos = 0;
 volatile static unsigned char hascii3[3];
 volatile static unsigned char hascii8[8];
 volatile static int32_t val, no;
+volatile static bool bZigBee = false;
 
 void uart_init()
 {	
@@ -45,11 +46,15 @@ ISR(USART_RX_vect)
 			{
 				case 0x70: //adres get
 					
+					if(bZigBee)uart_puts("AT+UCAST:0000=");
+					
 					uart_put(0xff);
 					uart_put(buffer[1]);
 					uart_put(0x70);
 					dec2hascii(ADDRESS, 3);
 					uart_put('\n');
+					
+					if(bZigBee)uart_puts("\n\r");
 					break;
 					
 				case 0x20: //ustaw predkosc
@@ -60,8 +65,20 @@ ISR(USART_RX_vect)
 				}
 				val = hascii2dec(hascii8, 8);
 				
-				m1_set(val);
-				m2_set(val);
+				if(val > 0)
+				{
+					m1_set(val);
+					m2_set(val);
+					m1_start(0);
+					m2_start(0);
+				}
+				else
+				{
+					m1_set(-1-val);
+					m2_set(-1*val);
+					m1_start(1);
+					m2_start(1);				
+				}
 				break;
 				
 				case 0x22: //przyrost predkosci
@@ -106,11 +123,13 @@ ISR(USART_RX_vect)
 				ADDRESS = hascii2dec(hascii3, 3);
 				eeprom_write_word((uint16_t*)1, (uint16_t)ADDRESS);
 				
+				if(bZigBee)uart_puts("AT+UCAST:0000=");
 				uart_put(0xff);
 				uart_put(ADDRESS);
 				uart_put(0x70);
 				dec2hascii(ADDRESS, 3);
 				uart_put('\n');
+				if(bZigBee)uart_puts("\n\r");
 				break;
 				
 				case 0x26: //regulacja prędkości pojedynczego silnika
@@ -133,54 +152,85 @@ ISR(USART_RX_vect)
 					switch(no)
 					{
 						case 0:
-							m1_set(val);
-							m1_start(0);
+							if(val > 0)
+							{
+								m1_set(val);								
+								m1_start(0);
+							}
+							else
+							{								
+								m1_set(-1*val);
+								m1_start(1);				
+							}
 							break;
 						case 1:
-							m1_set(val);
-							m1_start(1);
-							break;
-						case 2:
-							m2_set(val);
-							m2_start(0);
-							break;
-						case 3:
-							m2_set(val);
-							m2_start(1);
-							break;					
+							if(val > 0)
+							{
+								m2_set(val);								
+								m2_start(0);
+							}
+							else
+							{								
+								m2_set(-1*val);
+								m2_start(1);				
+							}
+							break;						
 					}
 					
 				break;
 				
 				case 0x61: // odczyt adc
+				if(bZigBee)uart_puts("AT+UCAST:0000=");
 				
-				sensors_update();
-				
+				sensors_update();				
 				uart_put(0xff);
 				uart_put(ADDRESS);
 				uart_put(0x61);
 				for(int i = 0; i < SENS; i++)
 					dec2hascii(sensor[i], 3);
 				uart_put('\n');
+				if(bZigBee)uart_puts("\n\r");
 				break;
 				
 				case 0x64: // odczyta predkosci				
 				
+				if(bZigBee)uart_puts("AT+UCAST:0000=");
 				uart_put(0xff);
 				uart_put(ADDRESS);
 				uart_put(0x64);				
 				dec2hascii(m1_getspeed(), 8);
 				dec2hascii(m2_getspeed(), 8);
 				uart_put('\n');
+				if(bZigBee)uart_puts("\n\r");
 				break;
 				
 				
 				case 0x90: //oczyt funkcji		
-				
+				if(bZigBee)uart_puts("AT+UCAST:0000=");
 				uart_put(0xff);
 				uart_put(ADDRESS);
 				uart_put(0x90);				
 				dec2hascii(3, 3);
+				uart_put('\n');
+				if(bZigBee)uart_puts("\n\r");
+				break;
+				
+				case 0x91: //zigbee on
+				bZigBee = true;
+				uart_puts("AT+UCAST:0000=");
+				uart_put(0xff);
+				uart_put(ADDRESS);
+				uart_put(0x91);
+				uart_put('\n');		
+				uart_puts("\n\r");				
+				break;
+				
+				
+				case 0x92: // zigbee off
+				bZigBee = false;
+				uart_put(0xff);
+				uart_put(ADDRESS);
+				uart_put(0x92);
 				uart_put('\n');
 				break;
 			}

@@ -34,7 +34,9 @@ void dec2hascii(uint32_t liczba, uint8_t length){
 int32_t hascii2dec(volatile unsigned char* p, volatile int8_t len){
 
 	volatile int32_t t = 0;
-
+	volatile int minus = 0; //w 8 hascii gdy 4 najstarsze bity mają wartość F, oznacza to liczbę ujemną, 
+	//konieczne, gdyż mega nie obsługuje więcej niż 16 bitowych zmiennych
+	
 	for(volatile int i = len -1; i >= 0; i--)
 	{
 		if(*p>='0' && *p<='9'){
@@ -42,9 +44,16 @@ int32_t hascii2dec(volatile unsigned char* p, volatile int8_t len){
 		}else if(*p>='A' && *p<='F'){
 			t+=(int32_t)((*p-55)*(1<< (i*4)));
 		}
+		if(*p == 'F' && i > 3)
+			minus++;
+		
+		
 		++p;	
 	}
 
-	return t;
+	if(minus == 4)
+		return -t;
+	else
+		return t;
 
 }
