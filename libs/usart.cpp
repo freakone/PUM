@@ -69,15 +69,15 @@ ISR(USART_RX_vect)
 				{
 					m1_set(val);
 					m2_set(val);
-					m1_start(0);
-					m2_start(0);
+					m1_start(1);
+					m2_start(1);
 				}
 				else
 				{
 					m1_set(-1-val);
 					m2_set(-1*val);
-					m1_start(1);
-					m2_start(1);				
+					m1_start(2);
+					m2_start(2);				
 				}
 				break;
 				
@@ -155,24 +155,24 @@ ISR(USART_RX_vect)
 							if(val > 0)
 							{
 								m1_set(val);								
-								m1_start(0);
+								m1_start(1);
 							}
 							else
 							{								
 								m1_set(-1*val);
-								m1_start(1);				
+								m1_start(2);				
 							}
 							break;
 						case 1:
 							if(val > 0)
 							{
 								m2_set(val);								
-								m2_start(0);
+								m2_start(1);
 							}
 							else
 							{								
 								m2_set(-1*val);
-								m2_start(1);				
+								m2_start(2);				
 							}
 							break;						
 					}
@@ -197,9 +197,18 @@ ISR(USART_RX_vect)
 				if(bZigBee)uart_puts("AT+UCAST:0000=");
 				uart_put(0xff);
 				uart_put(ADDRESS);
-				uart_put(0x64);				
-				dec2hascii(m1_getspeed(), 8);
-				dec2hascii(m2_getspeed(), 8);
+				uart_put(0x64);		
+				if(m1_getdir() < 2)
+					uart_puts("0000");
+				else
+					uart_puts("FFFF");
+				dec2hascii(m1_getspeed(), 4);
+				
+				if(m2_getdir() < 2)
+					uart_puts("0000");
+				else
+					uart_puts("FFFF");
+				dec2hascii(m2_getspeed(), 4);
 				uart_put('\n');
 				if(bZigBee)uart_puts("\n\r");
 				break;

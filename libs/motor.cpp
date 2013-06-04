@@ -6,7 +6,7 @@ volatile unsigned char m1_power = 0;
 volatile unsigned char m2_power = 0; // ustawiona predkosc
 
 volatile unsigned char m1_state = 0;
-volatile unsigned char m2_state = 0; // ustawiont status 0 - STOP, 1 - PRZOD, 2 - TYL
+volatile unsigned char m2_state = 0; // ustawiont status 0 - PRZOD, 1 - PRZOD, 2 - TYL
 
 void motor_init(){
 
@@ -76,6 +76,10 @@ unsigned char const m1_getspeed()
 	return m1_power;
 }
 
+unsigned char const m1_getdir()
+{
+	return m1_state;
+}
 
 void m2_start(unsigned char dir)
 {
@@ -121,5 +125,10 @@ void m2_change(char c)
 unsigned char const m2_getspeed()
 {
 	return m2_power;
+}
+
+unsigned char const m2_getdir()
+{
+	return m2_state;
 }
 

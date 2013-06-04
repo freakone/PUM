@@ -1,5 +1,4 @@
 #include "sensors.h"
-#include <stdlib.h>
 
 volatile unsigned int sensor[SENS];
 void sensors_init() // przestawic
