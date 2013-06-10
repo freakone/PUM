@@ -37,7 +37,7 @@ ISR(USART_RX_vect)
 	pos++;
 	
 
-	if(buffer[pos-1] == 0x0A &&  buffer[0] == 0xff)//sprawdzamy czy została przesłana poprawna ramka	
+	if((buffer[pos-1] == 0x0A || buffer[pos-1] == 0xFE) &&  buffer[0] == 0xff && pos > 3)//sprawdzamy czy została przesłana poprawna ramka	
 	{	
 	
 		if(buffer[1] == ADDRESS || buffer[1] == 0x10) // komendy dla wszystkich
@@ -74,7 +74,7 @@ ISR(USART_RX_vect)
 				}
 				else
 				{
-					m1_set(-1-val);
+					m1_set(-1*val);
 					m2_set(-1*val);
 					m1_start(2);
 					m2_start(2);				

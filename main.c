@@ -22,6 +22,14 @@ int main()
 	
 	while(1)
 	{		
-
+		sensors_update();
+		if(sensor[0] > 800)
+			uart_put('x');
+			
+		if(sensor[1] > 800)
+			uart_put('y');
+		
+		if(sensor[2] > 800)
+			uart_put('z');
 	}
 }
